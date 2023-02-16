@@ -1,0 +1,43 @@
+###
+# Unity folders and files
+###
+NewUnityProject/[Aa]ssets/AssetStoreTools*
+NewUnityProject/[Bb]uild/
+NewUnityProject/[Ll]ibrary/
+NewUnityProject/[Ll]ocal[Cc]ache/
+NewUnityProject/[Oo]bj/
+NewUnityProject/[Tt]emp/
+NewUnityProject/[Uu]nityGenerated/
+NewUnityProject/[Ll]ogs/
+# file on crash reports
+NewUnityProject/sysinfo.txt
+# Unity3D generated meta files
+NewUnityProject/*.pidb.meta
+
+###
+# VS/MD solution and project files
+###
+NewUnityProject/[Ee]xportedObj/
+NewUnityProject/*.booproj
+NewUnityProject/*.csproj
+NewUnityProject/*.sln
+NewUnityProject/*.suo
+NewUnityProject/*.svd
+NewUnityProject/*.unityproj
+NewUnityProject/*.user
+NewUnityProject/*.userprefs
+NewUnityProject/.pidb
+NewUnityProject/.DS_Store
+NewUnityProject/.vscode
+
+###
+# OS generated
+###
+NewUnityProject/.DS_Store
+NewUnityProject/.DSStore?
+NewUnityProject/.
+NewUnityProject/.Spotlight-V100
+NewUnityProject/.Trashes
+NewUnityProject/Icon?
+NewUnityProject/ehthumbs.db
+NewUnityProject/Thumbs.db
