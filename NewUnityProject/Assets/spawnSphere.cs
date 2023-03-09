@@ -1,44 +1,72 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Mathematics;
-using static Unity.Mathematics.math;
 
 namespace name1
 {
+    [RequireComponent(typeof(MeshFilter))]
+    [RequireComponent(typeof(MeshRenderer))]
     public class spawnSphere : MonoBehaviour
     {
         struct Triangle {
-            public float3 a, b, c;
+            public Vector3 a, b, c;
         };
 
-        AppendStructuredBuffer<Triangle> triangles;
+        struct Point {
+            public float randCol;
+            public Vector3 spawnPosition;
+            public Color newCol;
+            public GameObject pointObject;
+        };
+
         public GameObject points;
-        public const int MYSIZE = 5;
-        public const int NBCUBES = MYSIZE - 1;
+        public const int MYSIZE = 3;
+        public const int NBCUBES = (MYSIZE - 1)*(MYSIZE - 1)*(MYSIZE - 1);
+
         public float spawnVal = 0f;
         float oldSpawnVal;
-        float[,,] randCol = new float[MYSIZE, MYSIZE, MYSIZE];
-        float[,] cubes = new float[NBCUBES,8];
-        Vector3[,,] spawnPosition = new Vector3[MYSIZE, MYSIZE, MYSIZE];
-        Color[,,] newCol = new Color[MYSIZE, MYSIZE, MYSIZE];
-        GameObject[,,] tablePoint = new GameObject[MYSIZE, MYSIZE, MYSIZE];
+        //float[,,] randCol = new float[MYSIZE, MYSIZE, MYSIZE];
+        //float[,] cubes = new float[NBCUBES,8];
+        //Vector3[,,] spawnPosition = new Vector3[MYSIZE, MYSIZE, MYSIZE];
+        //Color[,,] newCol = new Color[MYSIZE, MYSIZE, MYSIZE];
+        //GameObject[,,] tablePoint = new GameObject[MYSIZE, MYSIZE, MYSIZE];
         //Vector3 sizeOfSpace;
 
-        float3[] cornerOffsets = new float3[8]{
-            float3(0, 0, 1), // v0
-            float3(1, 0, 1), // v1
-            float3(1, 0, 0), // v2
-            float3(0, 0, 0), // v3
-            float3(0, 1, 1), // v4
-            float3(1, 1, 1), // v5
-            float3(1, 1, 0), // v6
-            float3(0, 1, 0)  // v7
+        Vector3[] cornerOffsets = {
+            new Vector3(0, 0, 1), // v0
+            new Vector3(1, 0, 1), // v1
+            new Vector3(1, 0, 0), // v2
+            new Vector3(0, 0, 0), // v3
+            new Vector3(0, 1, 1), // v4
+            new Vector3(1, 1, 1), // v5
+            new Vector3(1, 1, 0), // v6
+            new Vector3(0, 1, 0)  // v7
         };
+
+        Point[,,] ptn = new Point[MYSIZE, MYSIZE, MYSIZE];
+        Point[,] cubesCorners = new Point[NBCUBES,8];
+        
+        //list of vertices
+        List<Vector3> middlePoints = new List<Vector3>();
+
+        List<int> triangles = new List<int>();
+
+        Mesh mesh;
+        MeshRenderer Matrenderer;
+
+        public Material mat;
+
+        void Awake(){
+            mesh = GetComponent<MeshFilter>().mesh;
+            
+        }
         
         // Start is called before the first frame update
         void Start()
         {
+            Matrenderer = GetComponent<MeshRenderer>();
+            Matrenderer.material = mat;
+
             oldSpawnVal = spawnVal;
             //sizeOfSpace = new Vector3(20f,20f,20f);
             int i = 0, j = 0, k = 0;
@@ -48,33 +76,51 @@ namespace name1
                 {
                     for( k = 0; k < MYSIZE; k++)
                     {
-                        randCol[i,j,k] = UnityEngine.Random.Range(0f, 1f);
-                        newCol[i,j,k] = new Color(randCol[i,j,k], randCol[i,j,k], randCol[i,j,k]);
-                        spawnPosition[i,j,k] = new Vector3(i*1f,j*1f,k*1f);
-                        Spawn(tablePoint, spawnPosition[i,j,k], i, j, k, newCol[i,j,k]);
-                        
+                        ptn[i,j,k].randCol = Random.Range(0f, 1f);
+                        ptn[i,j,k].newCol = new Color(ptn[i,j,k].randCol, ptn[i,j,k].randCol, ptn[i,j,k].randCol);
+                        ptn[i,j,k].spawnPosition = new Vector3(i*1f,j*1f,k*1f);
+                        ptn[i, j, k].pointObject = Instantiate(points, ptn[i,j,k].spawnPosition, Quaternion.identity);
+                        ptn[i, j, k].pointObject.GetComponent<Renderer>().material.color = ptn[i,j,k].newCol;
                     }
                 }
             }
-            for( i = 0; i < MYSIZE; i++)
+            
+            //Ajoute les points à des carrés c
+            for( i = 0; i < MYSIZE-1; i++)
             {
-                for( j = 0; j < MYSIZE; j++)
+                for( j = 0; j < MYSIZE-1; j++)
                 {
-                    for( k = 0; k < MYSIZE; k++)
+                    for( k = 0; k < MYSIZE-1; k++)
                     {
-                        for(int c = 0; c < NBCUBES; c++)
+                        //for(int c = 0; c < NBCUBES; c++)
+                        //{
+                        //    cubes[c,0] = ptn[i,j,k].randCol;
+                        //    cubes[c,1] = ptn[i+1,j,k].randCol;
+                        //    cubes[c,2] = ptn[i,j+1,k].randCol;
+                        //    cubes[c,3] = ptn[i,j,k+1].randCol;
+                        //    cubes[c,4] = ptn[i+1,j+1,k].randCol;
+                        //    cubes[c,5] = ptn[i+1,j,k+1].randCol;
+                        //    cubes[c,6] = ptn[i,j+1,k+1].randCol;
+                        //    cubes[c,7] = ptn[i+1,j+1,k+1].randCol;
+                        //}
+                        for(int c = 0; c < NBCUBES-1; c++)
                         {
-                            cubes[c,0] = randCol[i,j,k];
-                            cubes[c,1] = randCol[i+1,j,k];
-                            cubes[c,2] = randCol[i,j+1,k];
-                            cubes[c,3] = randCol[i,j,k+1];
-                            cubes[c,4] = randCol[i+1,j+1,k];
-                            cubes[c,5] = randCol[i+1,j,k+1];
-                            cubes[c,6] = randCol[i,j+1,k+1];
-                            cubes[c,7] = randCol[i+1,j+1,k+1];
+                            cubesCorners[c,0] = ptn[i,j,k+1];     //0 0 1
+                            cubesCorners[c,1] = ptn[i+1,j,k+1];   //1 0 1
+                            cubesCorners[c,2] = ptn[i+1,j,k];     //1 0 0
+                            cubesCorners[c,3] = ptn[i,j,k];       //0 0 0
+                            cubesCorners[c,4] = ptn[i,j+1,k+1];   //0 1 1
+                            cubesCorners[c,5] = ptn[i+1,j+1,k+1]; //1 1 1
+                            cubesCorners[c,6] = ptn[i+1,j+1,k];   //1 1 0
+                            cubesCorners[c,7] = ptn[i,j+1,k];     //0 1 0
                         }
                     }
                 }
+            }
+            //MarchingCubes(0);
+            for(int c = 0; c < NBCUBES-1; c++)
+            {
+                MarchingCubes(c);
             }
         }
 
@@ -89,9 +135,9 @@ namespace name1
                     {
                         for(int k = 0; k < MYSIZE; k++)
                         {
-                            if(randCol[i,j,k] >= spawnVal)
+                            if(ptn[i,j,k].randCol >= spawnVal)
                             {
-                                tablePoint[i, j, k].GetComponent<Renderer>().enabled = true;
+                                ptn[i,j,k].pointObject.GetComponent<Renderer>().enabled = true;
                             }
                         }
                     }
@@ -105,62 +151,112 @@ namespace name1
                     {
                         for(int k = 0; k < MYSIZE; k++)
                         {
-                            if(randCol[i,j,k] < spawnVal)
+                            if(ptn[i,j,k].randCol < spawnVal)
                             {
-                                tablePoint[i, j, k].GetComponent<Renderer>().enabled = false;
+                                ptn[i,j,k].pointObject.GetComponent<Renderer>().enabled = false;
                             }
                         }
                     }
                 }
             }
-
-            int cubeIndex = 0;
-            if(cubes[0,0] < spawnVal) cubeIndex |= 1;
-            if(cubes[0,1] < spawnVal) cubeIndex |= 2;
-            if(cubes[0,2] < spawnVal) cubeIndex |= 4;
-            if(cubes[0,3] < spawnVal) cubeIndex |= 8;
-            if(cubes[0,4] < spawnVal) cubeIndex |= 16;
-            if(cubes[0,5] < spawnVal) cubeIndex |= 32;
-            if(cubes[0,6] < spawnVal) cubeIndex |= 64;
-            if(cubes[0,7] < spawnVal) cubeIndex |= 128;
             
-            int[] edges = new int[16];
-            for(int i = 0; i < 16; i++)
-            {
-                edges[i] = MarchingConfig.TriTable[cubeIndex,i];
-            }
+            
 
-            for(int i = 0; edges[i] != -1; i +=3)
-            {
-                int edge00 = MarchingConfig.EdgeCon[edges[i],0];
-                int edge01 = MarchingConfig.EdgeCon[edges[i],1];
-
-                int edge10 = MarchingConfig.EdgeCon[edges[i + 1],0];
-                int edge11 = MarchingConfig.EdgeCon[edges[i + 1],1];
-
-                int edge20 = MarchingConfig.EdgeCon[edges[i + 2],0];
-                int edge21 = MarchingConfig.EdgeCon[edges[i + 2],1];
-
-                Triangle tri;
-                tri.a = interp(cornerOffsets[edge00],cubes[0,edge00],cornerOffsets[edge01],cubes[0,edge01]);
-                tri.b = interp(cornerOffsets[edge10],cubes[0,edge10],cornerOffsets[edge11],cubes[0,edge11]);
-                tri.c = interp(cornerOffsets[edge20],cubes[0,edge20],cornerOffsets[edge21],cubes[0,edge21]);
-                triangles.Append(tri);
-            }
             oldSpawnVal = spawnVal;
 
             
         }
 
-        void Spawn(GameObject[,,] tablePoint, Vector3 spawnPosition, int i,int j,int k,Color newCol )
-        {
-            tablePoint[i, j, k] = Instantiate(points, spawnPosition, Quaternion.identity);
-            tablePoint[i, j, k].GetComponent<Renderer>().material.color = newCol;
-        }
-
-        float3 interp(float3 edgeVertex1, float valueAtVertex1, float3 edgeVertex2, float valueAtVertex2)
+        Vector3 interp(Vector3 edgeVertex1, float valueAtVertex1, Vector3 edgeVertex2, float valueAtVertex2)
         {
             return (edgeVertex1 + (spawnVal - valueAtVertex1) * (edgeVertex2 - edgeVertex1)  / (valueAtVertex2 - valueAtVertex1));
+        }
+
+        void MarchingCubes(int c)
+        {
+
+            //find index for triangulation
+            int cubeIndex = 0;
+            if(cubesCorners[c,0].randCol < spawnVal) cubeIndex |= 1;
+            if(cubesCorners[c,1].randCol < spawnVal) cubeIndex |= 2;
+            if(cubesCorners[c,2].randCol < spawnVal) cubeIndex |= 4;
+            if(cubesCorners[c,3].randCol < spawnVal) cubeIndex |= 8;
+            if(cubesCorners[c,4].randCol < spawnVal) cubeIndex |= 16;
+            if(cubesCorners[c,5].randCol < spawnVal) cubeIndex |= 32;
+            if(cubesCorners[c,6].randCol < spawnVal) cubeIndex |= 64;
+            if(cubesCorners[c,7].randCol < spawnVal) cubeIndex |= 128;
+            
+            //print("CubeIndex : " + cubeIndex);
+
+            List<int> triangulation = new List<int>();
+            for(int i = 0; MarchingConfig.TriTable[cubeIndex,i] != -1; i++)
+            {
+                triangulation.Add(MarchingConfig.TriTable[cubeIndex,i]);
+                //print("triangulation : " + triangulation[i]);
+            }
+
+            
+            
+            //find center of segments of cubes where points are différents
+            for(int edgeIndex = 0; edgeIndex < triangulation.Count ;edgeIndex++)
+            {
+                int indexA = MarchingConfig.EdgeCon[triangulation[edgeIndex],0];
+                int indexB = MarchingConfig.EdgeCon[triangulation[edgeIndex],1];
+
+                Vector3 middlePos = (cubesCorners[c,indexA].spawnPosition + cubesCorners[c,indexB].spawnPosition) / 2;
+                //Vector3 middlePos = new Vector3((cubesCorners[indexA].spawnPosition.x + cubesCorners[indexB].spawnPosition.x) / 2.0f,
+                //                                (cubesCorners[indexA].spawnPosition.y + cubesCorners[indexB].spawnPosition.y) / 2.0f,
+                //                                (cubesCorners[indexA].spawnPosition.z + cubesCorners[indexB].spawnPosition.z) / 2.0f);
+                //print("middlePos : " + middlePos + " cubesCorners[indexA] : " + cubesCorners[indexA].spawnPosition + " cubesCorners[indexB] : " + cubesCorners[indexB].spawnPosition);
+                middlePoints.Add(middlePos);
+            }
+
+            //for(int i = 0; triangulation[i] != -1; i +=3)
+            //{
+            //    int edge00 = MarchingConfig.EdgeCon[triangulation[i],0];
+            //    int edge01 = MarchingConfig.EdgeCon[triangulation[i],1];
+//
+            //    int edge10 = MarchingConfig.EdgeCon[triangulation[i + 1],0];
+            //    int edge11 = MarchingConfig.EdgeCon[triangulation[i + 1],1];
+//
+            //    int edge20 = MarchingConfig.EdgeCon[triangulation[i + 2],0];
+            //    int edge21 = MarchingConfig.EdgeCon[triangulation[i + 2],1];
+//
+            //    Triangle tri;
+            //    tri.a = interp(cornerOffsets[edge00],cubesCorners[0,0,0].corners[edge00].randCol,cornerOffsets[edge01],cubesCorners[0,0,0].corners[edge01].randCol);
+            //    tri.b = interp(cornerOffsets[edge10],cubesCorners[0,0,0].corners[edge10].randCol,cornerOffsets[edge11],cubesCorners[0,0,0].corners[edge11].randCol);
+            //    tri.c = interp(cornerOffsets[edge20],cubesCorners[0,0,0].corners[edge20].randCol,cornerOffsets[edge21],cubesCorners[0,0,0].corners[edge21].randCol);
+            //    triangles.Append(tri);
+            //}
+
+            //define the order in which the vertices in the VerteicesArray shoudl be used to draw the triangle
+            //triangles[0] = 0;
+            //triangles[1] = 1;
+            //triangles[2] = 2;
+//
+            Vector3[] middlePointToTable = new Vector3[middlePoints.Count];
+            
+
+            for(int i = 0; i < middlePointToTable.GetLength(0); i++)
+            {
+                middlePointToTable[i] = middlePoints[i];
+                //print(middlePoints[i]);
+                triangles.Add(i);
+            }
+            ////add these two triangles to the mesh
+            print("Count : " + triangles.Count);
+
+            int[] trianglesToTable = new int[triangles.Count];
+
+            for(int i = 0; i < trianglesToTable.GetLength(0); i++)
+            {
+                trianglesToTable[i] = triangles[i];
+            }
+
+            mesh.vertices = middlePointToTable;
+            mesh.triangles = trianglesToTable;
+
+            
         }
     }
 }

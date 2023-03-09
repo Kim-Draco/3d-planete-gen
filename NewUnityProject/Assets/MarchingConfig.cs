@@ -271,7 +271,6 @@ namespace name1
         public static int[,] TriTable
         {
             get {return triTable;}
-            set {}
         }
 
         public static int[,] EdgeCon
