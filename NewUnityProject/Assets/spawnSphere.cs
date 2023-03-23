@@ -20,7 +20,7 @@ namespace name1
         };
 
         public GameObject points;
-        public const int MYSIZE = 3;
+        public const int MYSIZE = 10;
         public const int NBCUBES = (MYSIZE - 1)*(MYSIZE - 1)*(MYSIZE - 1);
 
         public float spawnVal = 0f;
@@ -86,6 +86,7 @@ namespace name1
             }
             
             //Ajoute les points à des carrés c
+            int nc = 0;
             for( i = 0; i < MYSIZE-1; i++)
             {
                 for( j = 0; j < MYSIZE-1; j++)
@@ -103,23 +104,28 @@ namespace name1
                         //    cubes[c,6] = ptn[i,j+1,k+1].randCol;
                         //    cubes[c,7] = ptn[i+1,j+1,k+1].randCol;
                         //}
-                        for(int c = 0; c < NBCUBES-1; c++)
-                        {
-                            cubesCorners[c,0] = ptn[i,j,k+1];     //0 0 1
-                            cubesCorners[c,1] = ptn[i+1,j,k+1];   //1 0 1
-                            cubesCorners[c,2] = ptn[i+1,j,k];     //1 0 0
-                            cubesCorners[c,3] = ptn[i,j,k];       //0 0 0
-                            cubesCorners[c,4] = ptn[i,j+1,k+1];   //0 1 1
-                            cubesCorners[c,5] = ptn[i+1,j+1,k+1]; //1 1 1
-                            cubesCorners[c,6] = ptn[i+1,j+1,k];   //1 1 0
-                            cubesCorners[c,7] = ptn[i,j+1,k];     //0 1 0
-                        }
+                    
+                        cubesCorners[nc,0] = ptn[i,j,k+1];     //0 0 1
+                        cubesCorners[nc,1] = ptn[i+1,j,k+1];   //1 0 1
+                        cubesCorners[nc,2] = ptn[i+1,j,k];     //1 0 0
+                        cubesCorners[nc,3] = ptn[i,j,k];       //0 0 0
+                        cubesCorners[nc,4] = ptn[i,j+1,k+1];   //0 1 1
+                        cubesCorners[nc,5] = ptn[i+1,j+1,k+1]; //1 1 1
+                        cubesCorners[nc,6] = ptn[i+1,j+1,k];   //1 1 0
+                        cubesCorners[nc,7] = ptn[i,j+1,k];     //0 1 0
+                        nc+=1;
                     }
                 }
             }
             //MarchingCubes(0);
             for(int c = 0; c < NBCUBES-1; c++)
             {
+                //print("cube " + c + " :\n");
+                //for(int c2 = 0; c2< 7; c2++)
+                //{
+                //    print("- " + cubesCorners[c,c2].spawnPosition + "\n");
+                //}
+                //print("\n");
                 MarchingCubes(c);
             }
         }
