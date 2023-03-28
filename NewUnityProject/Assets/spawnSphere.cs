@@ -20,7 +20,7 @@ namespace name1
         };
 
         public GameObject points;
-        public const int MYSIZE = 10;
+        public const int MYSIZE = 8;
         public const int NBCUBES = (MYSIZE - 1)*(MYSIZE - 1)*(MYSIZE - 1);
 
         public float spawnVal = 0f;
@@ -51,21 +51,23 @@ namespace name1
 
         List<int> triangles = new List<int>();
 
+        public MeshFilter MeshFilter;
         Mesh mesh;
-        MeshRenderer Matrenderer;
+        //MeshRenderer Matrenderer;
 
-        public Material mat;
+        //public Material mat;
 
-        void Awake(){
-            mesh = GetComponent<MeshFilter>().mesh;
-            
-        }
+        //void Awake(){
+        //    mesh = GetComponent<MeshFilter>().mesh;
+        //    
+        //}
         
         // Start is called before the first frame update
         void Start()
         {
-            Matrenderer = GetComponent<MeshRenderer>();
-            Matrenderer.material = mat;
+            mesh = new Mesh();
+            //Matrenderer = GetComponent<MeshRenderer>();
+            //Matrenderer.material = mat;
 
             oldSpawnVal = spawnVal;
             //sizeOfSpace = new Vector3(20f,20f,20f);
@@ -118,7 +120,7 @@ namespace name1
                 }
             }
             //MarchingCubes(0);
-            for(int c = 0; c < NBCUBES-1; c++)
+            for(int c = 0; c < NBCUBES; c++)
             {
                 //print("cube " + c + " :\n");
                 //for(int c2 = 0; c2< 7; c2++)
@@ -202,7 +204,6 @@ namespace name1
             }
 
             
-            
             //find center of segments of cubes where points are différents
             for(int edgeIndex = 0; edgeIndex < triangulation.Count ;edgeIndex++)
             {
@@ -215,6 +216,7 @@ namespace name1
                 //                                (cubesCorners[indexA].spawnPosition.z + cubesCorners[indexB].spawnPosition.z) / 2.0f);
                 //print("middlePos : " + middlePos + " cubesCorners[indexA] : " + cubesCorners[indexA].spawnPosition + " cubesCorners[indexB] : " + cubesCorners[indexB].spawnPosition);
                 middlePoints.Add(middlePos);
+                
             }
 
             //for(int i = 0; triangulation[i] != -1; i +=3)
@@ -242,12 +244,17 @@ namespace name1
 //
             Vector3[] middlePointToTable = new Vector3[middlePoints.Count];
             
-
             for(int i = 0; i < middlePointToTable.GetLength(0); i++)
             {
                 middlePointToTable[i] = middlePoints[i];
                 //print(middlePoints[i]);
                 triangles.Add(i);
+                //if(i!= 0 && (i+1) % 3 == 0)
+                //{
+                //    triangles.Add(i-2);
+                //    triangles.Add(i);
+                //    triangles.Add(i-1);
+                //}
             }
             ////add these two triangles to the mesh
             print("Count : " + triangles.Count);
@@ -259,9 +266,10 @@ namespace name1
                 trianglesToTable[i] = triangles[i];
             }
 
-            mesh.vertices = middlePointToTable;
-            mesh.triangles = trianglesToTable;
-
+            mesh.SetVertices(middlePointToTable);
+            mesh.SetTriangles(trianglesToTable, 0);
+            mesh.RecalculateNormals();
+            MeshFilter.mesh = mesh;
             
         }
     }

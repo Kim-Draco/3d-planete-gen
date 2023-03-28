@@ -11,12 +11,15 @@ public class triangle : MonoBehaviour
 {
     // Use this for initialization
     Mesh mesh;
+    Mesh mesh2;
+    Mesh mesh3;
     Vector3[] vertices, vertices2;
     int[] triangles, triangles2;
 
     void Awake()
     {
-            mesh = GetComponent<MeshFilter>().mesh;
+            //mesh = GetComponent<MeshFilter>().mesh;
+            //mesh2 = GetComponent<MeshFilter>().mesh;
     }
     void Start()
     {
@@ -38,17 +41,29 @@ public class triangle : MonoBehaviour
 
     void MakeMeshData(int i)
     {
-        vertices = new Vector3[] {new Vector3(0, 0, 0), new Vector3(0, 1, 0), new Vector3(1, 1, 0),
-                                    new Vector3(1, 0, 0), new Vector3(1, 1, 0), new Vector3(0, 1, 0)};
-        triangles =  new int[] {0, 1, 2, 3, 4, 5};
-        vertices2 = new Vector3[] {new Vector3(1, 0, 0), new Vector3(1, 1, 0), new Vector3(2, 1, 0)};
-        triangles2 =  new int[] {0, 1, 2};
+        vertices = new Vector3[] {new Vector3(0, 0, 0), new Vector3(0, 1, 0), new Vector3(1, 1, 0)};
+        triangles =  new int[] {0, 1, 2};
+        triangles2 =  new int[] {0, 2, 1};
     }
 
     void CreateMesh(int i)
     {
         //mesh[i].Clear();
-        mesh.vertices = vertices;
-        mesh.triangles = triangles;
+        CombineInstance[] combine = new CombineInstance[2];
+        //mesh.vertices = vertices;
+        //mesh.triangles = triangles;
+        //mesh2.vertices = vertices;
+        //mesh2.triangles = triangles2;
+        //mesh.RecalculateNormals();
+        //mesh2.RecalculateNormals();
+        combine[0].mesh = GetComponent<MeshFilter>().mesh;
+        combine[0].mesh.vertices = vertices;
+        combine[0].mesh.triangles = triangles;
+        combine[0].mesh.RecalculateNormals();
+        combine[1].mesh = GetComponent<MeshFilter>().mesh;
+        combine[1].mesh.vertices = vertices;
+        combine[1].mesh.triangles = triangles2;
+        combine[1].mesh.RecalculateNormals();
+        mesh3.CombineMeshes(combine);
     }
 }
