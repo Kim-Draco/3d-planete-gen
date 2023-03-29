@@ -20,7 +20,7 @@ namespace name1
         };
 
         public GameObject points;
-        public const int MYSIZE = 8;
+        public const int MYSIZE = 10;
         public const int NBCUBES = (MYSIZE - 1)*(MYSIZE - 1)*(MYSIZE - 1);
 
         public float spawnVal = 0f;
@@ -63,12 +63,23 @@ namespace name1
         //}
         
         // Start is called before the first frame update
+        float RandCol(Vector3 center, Vector3 point, float space)
+        {
+            float dist = Vector3.Distance(point, center)*1f/1000;
+            float randCol = Random.Range(dist, 1f);
+            if(point.x == 0 || point.x == (MYSIZE-1)*space || point.y == 0 || point.y == (MYSIZE-1)*space || point.z == 0 || point.z == (MYSIZE-1)*space)
+            {
+                randCol = 0f;
+            }
+            return randCol;
+        }
         void Start()
         {
             mesh = new Mesh();
             //Matrenderer = GetComponent<MeshRenderer>();
             //Matrenderer.material = mat;
-
+            float space = 0.5f;
+            Vector3 center = new Vector3((MYSIZE-1)*space/2,(MYSIZE-1)*space/2,(MYSIZE-1)*space/2);
             oldSpawnVal = spawnVal;
             //sizeOfSpace = new Vector3(20f,20f,20f);
             int i = 0, j = 0, k = 0;
@@ -78,11 +89,11 @@ namespace name1
                 {
                     for( k = 0; k < MYSIZE; k++)
                     {
-                        ptn[i,j,k].randCol = Random.Range(0f, 1f);
+                        ptn[i,j,k].spawnPosition = new Vector3(i*space,j*space,k*space);
+                        ptn[i,j,k].randCol = RandCol(center, ptn[i,j,k].spawnPosition, space);
                         ptn[i,j,k].newCol = new Color(ptn[i,j,k].randCol, ptn[i,j,k].randCol, ptn[i,j,k].randCol);
-                        ptn[i,j,k].spawnPosition = new Vector3(i*1f,j*1f,k*1f);
-                        ptn[i, j, k].pointObject = Instantiate(points, ptn[i,j,k].spawnPosition, Quaternion.identity);
-                        ptn[i, j, k].pointObject.GetComponent<Renderer>().material.color = ptn[i,j,k].newCol;
+                        //ptn[i, j, k].pointObject = Instantiate(points, ptn[i,j,k].spawnPosition, Quaternion.identity);
+                        //ptn[i, j, k].pointObject.GetComponent<Renderer>().material.color = ptn[i,j,k].newCol;
                     }
                 }
             }
@@ -135,43 +146,42 @@ namespace name1
         // Update is called once per frame
         void Update()
         {
-            if(spawnVal < oldSpawnVal)
-            {
-                for(int i = 0; i < MYSIZE; i++)
-                {
-                    for(int j = 0; j < MYSIZE; j++)
-                    {
-                        for(int k = 0; k < MYSIZE; k++)
-                        {
-                            if(ptn[i,j,k].randCol >= spawnVal)
-                            {
-                                ptn[i,j,k].pointObject.GetComponent<Renderer>().enabled = true;
-                            }
-                        }
-                    }
-                }
-            }
-            else if(spawnVal > oldSpawnVal)
-            {
-                for(int i = 0; i < MYSIZE; i++)
-                {
-                    for(int j = 0; j < MYSIZE; j++)
-                    {
-                        for(int k = 0; k < MYSIZE; k++)
-                        {
-                            if(ptn[i,j,k].randCol < spawnVal)
-                            {
-                                ptn[i,j,k].pointObject.GetComponent<Renderer>().enabled = false;
-                            }
-                        }
-                    }
-                }
-            }
+            //if(spawnVal < oldSpawnVal)
+            //{
+            //    for(int i = 0; i < MYSIZE; i++)
+            //    {
+            //        for(int j = 0; j < MYSIZE; j++)
+            //        {
+            //            for(int k = 0; k < MYSIZE; k++)
+            //            {
+            //                if(ptn[i,j,k].randCol >= spawnVal)
+            //                {
+            //                    ptn[i,j,k].pointObject.GetComponent<Renderer>().enabled = true;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
+            //else if(spawnVal > oldSpawnVal)
+            //{
+            //    for(int i = 0; i < MYSIZE; i++)
+            //    {
+            //        for(int j = 0; j < MYSIZE; j++)
+            //        {
+            //            for(int k = 0; k < MYSIZE; k++)
+            //            {
+            //                if(ptn[i,j,k].randCol < spawnVal)
+            //                {
+            //                    ptn[i,j,k].pointObject.GetComponent<Renderer>().enabled = false;
+            //                }
+            //            }
+            //        }
+            //    }
+            //}
             
             
 
-            oldSpawnVal = spawnVal;
-
+            //oldSpawnVal = spawnVal;
             
         }
 
@@ -269,8 +279,9 @@ namespace name1
             mesh.SetVertices(middlePointToTable);
             mesh.SetTriangles(trianglesToTable, 0);
             mesh.RecalculateNormals();
+            MeshCollider meshc = gameObject.AddComponent(typeof(MeshCollider)) as MeshCollider;
+            meshc.sharedMesh = mesh;
             MeshFilter.mesh = mesh;
-            
         }
     }
 }

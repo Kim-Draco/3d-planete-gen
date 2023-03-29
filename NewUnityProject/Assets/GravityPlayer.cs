@@ -7,19 +7,19 @@ using UnityEngine;
 public class GravityPlayer : MonoBehaviour
 {
     Gravity planet;
-    Rigidbody rigidbody;
+    Rigidbody rigidbody1;
 
     void Awake()
     {
         planet = GameObject.FindGameObjectWithTag("Planet").GetComponent<Gravity>();
-        rigidbody = GetComponent<Rigidbody>();
+        rigidbody1 = GetComponent<Rigidbody>();
 
-        rigidbody.useGravity = false;
-        rigidbody.constraints = RigidbodyConstraints.FreezeRotation;
+        rigidbody1.useGravity = false;
+        rigidbody1.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
     void FixedUpdate()
     {
-        planet.GravityPlanet(rigidbody);
+        planet.GravityPlanet(rigidbody1);
     }
 }
