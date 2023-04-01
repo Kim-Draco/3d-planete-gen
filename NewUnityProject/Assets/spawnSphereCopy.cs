@@ -78,7 +78,7 @@ namespace name1
             mesh = new Mesh();
             //Matrenderer = GetComponent<MeshRenderer>();
             //Matrenderer.material = mat;
-            float space = 0.5f;
+            float space = 1f;
             Vector3 center = new Vector3((MYSIZE-1)*space/2,(MYSIZE-1)*space/2,(MYSIZE-1)*space/2);
             oldSpawnVal = spawnVal;
             //sizeOfSpace = new Vector3(20f,20f,20f);
@@ -91,9 +91,10 @@ namespace name1
                     {
                         ptn[i,j,k].spawnPosition = new Vector3(i*space,j*space,k*space);
                         ptn[i,j,k].randCol = RandCol(center, ptn[i,j,k].spawnPosition, space);
+                        //ptn[i,j,k].randCol = Random.Range(0f, 1f);
                         ptn[i,j,k].newCol = new Color(ptn[i,j,k].randCol, ptn[i,j,k].randCol, ptn[i,j,k].randCol);
-                        //ptn[i, j, k].pointObject = Instantiate(points, ptn[i,j,k].spawnPosition, Quaternion.identity);
-                        //ptn[i, j, k].pointObject.GetComponent<Renderer>().material.color = ptn[i,j,k].newCol;
+                        ptn[i, j, k].pointObject = Instantiate(points, ptn[i,j,k].spawnPosition, Quaternion.identity);
+                        ptn[i, j, k].pointObject.GetComponent<Renderer>().material.color = ptn[i,j,k].newCol;
                     }
                 }
             }

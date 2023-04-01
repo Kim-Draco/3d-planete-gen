@@ -407,7 +407,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1142369793}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f44c04dc0f0c8b943883f9e3c829d227, type: 3}
   m_Name: 
@@ -535,6 +535,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1613710824}
   - component: {fileID: 1613710823}
+  - component: {fileID: 1613710830}
   - component: {fileID: 1613710825}
   - component: {fileID: 1613710826}
   - component: {fileID: 1613710827}
@@ -554,7 +555,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1613710822}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9bd42109e100e104f976e17c42ebd86d, type: 3}
   m_Name: 
@@ -671,6 +672,21 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &1613710830
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1613710822}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cba6924e34b452d4f970d720edfa3028, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  points: {fileID: 9117208452018591370, guid: 2ec2b51c7de7659428d08b03c5017fa7, type: 3}
+  spawnVal: 0.5
+  MeshFilter: {fileID: 689917077}
 --- !u!1 &1803177935
 GameObject:
   m_ObjectHideFlags: 0
@@ -691,7 +707,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!136 &1803177936
 CapsuleCollider:
   m_ObjectHideFlags: 0
